@@ -1,0 +1,20 @@
+{
+  "name": "preentrega2ecommerce",
+  "version": "1.0.0",
+  "description": "PrenEntrega 2 Curso Backend I Coder House - Alumno JH",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node --watch src/app.js"
+  },
+  "author": "Ing Julian Holzschuh",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2",
+    "express-handlebars": "^8.0.1",
+    "handlebars": "^4.7.8",
+    "morgan": "^1.10.0",
+    "socket.io": "^4.8.1"
+  }
+}
