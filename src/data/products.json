@@ -53,5 +53,16 @@
     "stock": "10",
     "category": "Postman",
     "thumbnails": ""
+  },
+  {
+    "id": "6",
+    "title": "321321",
+    "description": "afsa d23e43r",
+    "code": "01112",
+    "price": 22,
+    "status": true,
+    "stock": 2222,
+    "category": "SADAD",
+    "thumbnails": ""
   }
 ]

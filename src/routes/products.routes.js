@@ -11,11 +11,13 @@ const router = Router();
 const __dirname = getDirname(import.meta.url);
 
 // //MENU HTTP
-// router.get('/menu', (req,res) => {
-//   res.render("index", {
+router.get("/menu", (req, res) => {
+  res.render("menu", { title: "Menú de Productos" });
+});
 
-//   });
-// });
+router.get("/getId", (req, res) => {
+  res.render("getID", { title: "getID" });
+});
 
 //Obtener todos los productos yendo al router
 router.get("/", async (req, res) => {
