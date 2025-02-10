@@ -10,6 +10,13 @@ import { getDirname } from "../utils/dirname.js";
 const router = Router();
 const __dirname = getDirname(import.meta.url);
 
+// //MENU HTTP
+// router.get('/menu', (req,res) => {
+//   res.render("index", {
+
+//   });
+// });
+
 //Obtener todos los productos yendo al router
 router.get("/", async (req, res) => {
   try {
@@ -188,7 +195,7 @@ const productTest = {
 
 //const stringifyJSON = JSON.stringify(productTest);
 
-async function loadProducts() {
+export async function loadProducts() {
   //Declaro la ruta absoluta del archivo OJO, si queda dentro del TRY el CATCH no lo va a poder usar!
   const filePath = path.resolve(__dirname, "../data/products.json");
 

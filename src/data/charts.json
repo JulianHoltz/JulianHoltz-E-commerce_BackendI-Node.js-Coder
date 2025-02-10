@@ -7,6 +7,12 @@
         "quantity": {
           "quantity": 1
         }
+      },
+      {
+        "id": "2",
+        "quantity": {
+          "quantity": "2"
+        }
       }
     ]
   }
