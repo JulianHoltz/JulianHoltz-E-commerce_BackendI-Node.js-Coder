@@ -5,21 +5,12 @@ import { productModel } from "../models/product.model.js";
 const router = Router();
 //const __dirname = getDirname(import.meta.url); dirname quedo obsoleto 😭
 
-// //MENU HTTP
-router.get("/menu", (req, res) => {
-  res.render("menu", { title: "Menú de Productos" });
-});
-
-router.get("/getId", (req, res) => {
-  res.render("getID", { title: "getID" });
-});
-
 
 //Obtener todos los productos con paginate
 router.get("/", async (req, res) => {
   try {
     // Asignar default 10 a limit y 1 a page si no vienen en req.query
-    const limit = req.query.limit ? parseInt(req.query.limit) : 10;
+    const limit = req.query.limit ? parseInt(req.query.limit) : 9;
     const page = req.query.page ? parseInt(req.query.page) : 1;
     const { query, sort } = req.query;
     

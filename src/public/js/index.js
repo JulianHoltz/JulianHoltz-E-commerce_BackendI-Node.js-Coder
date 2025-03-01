@@ -11,39 +11,24 @@ socket.on("productList", (products) => {
 
 //Renderizar la tabla
 const renderTable = (products) => {
-    let html = `
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Título</th>
-                    <th>Descripción</th>
-                    <th>Código</th>
-                    <th>Precio</th>
-                    <th>Stock</th>
-                    <th>Categoría</th>
-                    <th>Acciones</th> <!-- Nueva columna para los botones -->
-                </tr>
-            </thead>
-            <tbody>
-    `;
+    let html = ``;
 
-    products.forEach(product => {
-        html += `
-            <tr data-id="${product.id}">
-                <td>${product.id}</td>
-                <td>${product.title}</td>
-                <td>${product.description}</td>
-                <td>${product.code}</td>
-                <td>$${product.price}</td>
-                <td>${product.stock}</td>
-                <td>${product.category}</td>
-                <td>
-                    <button class="btn btn-danger btn-delete" data-id="${product.id}">Eliminar</button>
-                </td>
-            </tr>
-        `;
-    });
+//Cartas de producto
+products.forEach(product => {
+    html += `
+        <div class="col">
+            <div class="card shadow-sm" style="width: 90%; max-width: 250px;">
+                <img src="${product.img.thumbnails}" class="card-img-top" alt="${product.img.alt}">
+                <div class="card-body p-2">
+                    <h6 class="card-title text-truncate">${product.title}</h6>
+                    <p class="card-text text-muted small">${product.description}</p>
+                    <h6 class="fw-bold">$${product.price}</h6>
+                    <a href="/products/realtimeProducts/productDetail/${product._id}" class="btn btn-primary btn-sm w-100">Product Detail</a>
+                </div>
+            </div>
+        </div>
+    `;
+});
 
     html += `</tbody></table>`;
     productsTable.innerHTML = html;
@@ -69,6 +54,11 @@ const renderTable = (products) => {
         });
     });
 };
+
+
+
+
+
 
 
 // Manejar envío del formulario por HTTP y actualizar con WebSocket

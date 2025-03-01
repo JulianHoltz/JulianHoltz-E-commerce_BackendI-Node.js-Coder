@@ -1,6 +1,6 @@
 import express from 'express'; //importo la libreria de express
 import productsRouter from './routes/products.routes.js'
-import chartsRouter from './routes/charts.routes.js'
+import cartsRouter from './routes/carts.routes.js'
 import morgan from 'morgan';
 import { getDirname } from "./utils/dirname.js";
 import { Server } from "socket.io";
@@ -40,7 +40,7 @@ app.set("view engine", "handlebars");
 //Rutas principales
 //app.use("/api/users", userRouter); //Esto todavia no lo uso
 app.use("/api/products", productsRouter);
-app.use("/api/charts", chartsRouter);
+app.use("/api/carts", cartsRouter);
 
 
 //paginas publicas
@@ -59,20 +59,30 @@ const httpServer = app.listen(PORT, () => {
 const io = new Server(httpServer);
 
 
-// WebSocket para enviar la lista de productos
 io.on("connection", async (socket) => {
     console.log("Cliente conectado");
 
-    // Enviar la lista inicial de productos
-    let products = await loadProducts();
+    // Función para obtener productos desde el API
+    const fetchProducts = async () => {
+        try {
+            const response = await fetch("http://localhost:8080/api/products");
+            const data = await response.json();
+            return data.payload.docs; // Ajusta según el formato de la respuesta de paginate
+        } catch (error) {
+            console.error("Error obteniendo productos:", error);
+            return [];
+        }
+    };
+
+    // Enviar la lista inicial de productos al cliente
+    const products = await fetchProducts();
     socket.emit("productList", products);
 
-    // Emitir la lista de productos al conectar un cliente
+    // Escuchar si se agrega un nuevo producto y actualizar la lista
     socket.on("newProductAdded", async () => {
-    const updatedProducts = await loadProducts();
-    io.emit("productList", updatedProducts);
+        const updatedProducts = await fetchProducts();
+        io.emit("productList", updatedProducts);
     });
-
 });
 
 

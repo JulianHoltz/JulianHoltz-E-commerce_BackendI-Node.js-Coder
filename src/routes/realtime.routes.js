@@ -9,4 +9,14 @@ router.get('/', (req,res) => {
     });
 });
 
+//endpoints
+router.get('/productDetail', (req,res) => {
+    res.render("productDetail", {
+
+    });
+});
+
+
+  
+
 export default router;

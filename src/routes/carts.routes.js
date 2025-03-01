@@ -6,7 +6,7 @@ import { cartModel } from "../models/cart.model.js";
 const router = Router();
 const __dirname = getDirname(import.meta.url);
 
-//Obtener todos los carritos yendo al router (falta testear)
+//Obtener todos los carritos (MongoDB ok)
 router.get("/", async (req, res) => {
  try {
     const carts = await cartModel.find();
@@ -17,7 +17,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-//Crear Carrito Nuevo (falta testear)
+//Crear Carrito Nuevo (MongoDB ok)
 router.post("/:user", async (req,res) => {
   const {user} = req.params;
   try{
@@ -31,11 +31,11 @@ router.post("/:user", async (req,res) => {
   }
 });
 
-//obtener carrito por id (falta testear)
+//obtener carrito por id (MongoDB ok)
 router.get("/:cid", async (req, res) => {
   const { cid } = req.params;
   try {
-    const cart = await cartModel.find(cid);
+    const cart = await cartModel.findById(cid);
     res.status(200).send({ status: "success", payload: cart });
   } catch (error) {
     res.status(500).send({ status: 'error', message: 'Error retriving the cart: ' + error.message });
