@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node --watch src/app.js"
+    "start": "node src/app.js",
+    "dev": "node --watch src/app.js"
   },
   "author": "Ing Julian Holzschuh",
   "license": "ISC",
@@ -14,6 +15,8 @@
     "express": "^4.21.2",
     "express-handlebars": "^8.0.1",
     "handlebars": "^4.7.8",
+    "mongoose": "^8.11.0",
+    "mongoose-paginate-v2": "^1.9.0",
     "morgan": "^1.10.0",
     "socket.io": "^4.8.1"
   }

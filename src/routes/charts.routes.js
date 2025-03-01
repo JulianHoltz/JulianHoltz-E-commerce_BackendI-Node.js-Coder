@@ -1,160 +1,59 @@
-import { Router } from "express"; //Importo modulo router de express
-import fs from "fs/promises";
-import path from "path";
+import { Router } from "express";
 import { getDirname } from "../utils/dirname.js";
-// import {uploader} from '../utilis.js' //Esto todavia no existe...
-
-//TO DO LIST
+import { cartModel } from "../models/cart.model.js";
 
 
 const router = Router();
 const __dirname = getDirname(import.meta.url);
 
-//Obtener todos los carritos yendo al router
+//Obtener todos los carritos yendo al router (falta testear)
 router.get("/", async (req, res) => {
-  try {
-    const response = await loadCharts();
-    res.json(response);
+ try {
+    const carts = await cartModel.find();
+    res.status(200).send({ status: "success", payload: carts });
   } catch (error) {
-    console.error("Error al cargar los carritos:", error);
-    res.status(500).json({ error: "Error interno del servidor" });
+    console.error("Error loading carts:", error);
+    res.status(500).send({ status: "error", message: "Could not retrieve carts" });
   }
 });
 
-//Crear Carrito Nuevo
-router.post("/", async (req,res) => {
-
+//Crear Carrito Nuevo (falta testear)
+router.post("/:user", async (req,res) => {
+  const {user} = req.params;
   try{
-    //Cargar carritos
-     let charts = await loadCharts();
-     if(charts === undefined){charts = []};
-     const chartsQuantity = charts.length;
-
-    //formato carrito nuevo
-    const newChart = {
-      "id": `${chartsQuantity + 1}`,
-      "products": []
-    }
-
-    //Agrego carrito a la lista y guardo
-    charts.push(newChart);
-    saveList(charts);
-    res.json({message:"Se creo un nuevo carrito exitosamente"});
+      const newCart = new cartModel({user});
+      const cart = await newCart.save();
+      res.status(201).send({ status: 'success', message: 'Cart created successfully', payload: cart });
   }
   catch(error) {
-    console.error("Error al cargar los carritos:", error);
-    res.status(500).json({ error: "Error interno del servidor" });
+    console.error("Error creating the cart:", error);
+    res.status(500).send({ status: 'error', message: 'Error creating the cart: ' + error.message });
   }
 });
 
-//obtener carrito por id
+//obtener carrito por id (falta testear)
 router.get("/:cid", async (req, res) => {
   const { cid } = req.params;
-  if (!cid) {
-    return res.status(400).json({ error: "ID is required" });
-  }
   try {
-    const charts = await loadCharts();
-    const chart = charts.find((c) => c.id === cid);
-    if (!chart) {
-      return res.status(404).json({ error: "chart not found" });
-    }
-    res.json(chart);
+    const cart = await cartModel.find(cid);
+    res.status(200).send({ status: "success", payload: cart });
   } catch (error) {
-    console.error("Error al cargar los carritos:", error);
-    res.status(500).json({ error: "Error interno del servidor" });
+    res.status(500).send({ status: 'error', message: 'Error retriving the cart: ' + error.message });
   }
 });
 
-//Agregar producto al carrito
-router.post("/:cid/product/", async (req,res) => {
-  const {cid} = req.params;
-  const {pid, quantity} = req.body;
-
-  if (!cid || !pid || !quantity) {
-    return res.status(400).json({ error: "Chart ID, Product ID and Product Quantity are required" });
-  }
+//Agregar producto al carrito TERMINAR
+router.post("/:cid/:pid/:quantity", async (req,res) => {
+  const {cid,pid, quantity} = req.params;
   try {
-    const charts = await loadCharts();
-    const chart = charts.find((c) => c.id === cid);
-    if (!chart) {
-      return res.status(404).json({ error: "chart not found" });
-    }
-
-    //Busco si el producto ya esta cargado:
-    const products = chart.products;
-    const product = products.find((p) => p.id === pid);
-    //si no existe lo agrego
-    if (!product) {
-      const newProduct = {"id": `${pid}`, "quantity":{quantity}};
-      chart.products.push(newProduct);
-    //si existe le sumo la cantidad
-    } else {
-      product.quantity = (parseInt(product.quantity) + parseInt(quantity));
-    }
-
-  
-
-    //guardo los cambios
-    saveList(charts);
-    res.json(`Se aniadio el producto al carrito`); //esto solo muestra, no guarda
-
-
     
   } catch (error) {
-    console.error("Error al cargar los carritos:", error);
+
     res.status(500).json({ error: "Error interno del servidor" });
   }
 
 });
 
-async function loadCharts() {
-  //Declaro la ruta absoluta del archivo
-  const filePath = path.resolve(__dirname, "../data/charts.json");
 
-  try {
-    // Intentar leer el archivo
-    const data = await fs.readFile(filePath, "utf-8");
-    console.log(data);
-
-    // Parsear el contenido del archivo
-    const charts = JSON.parse(data);
-    return charts;
-  } catch (error) {
-    // Si el archivo no existe, aviso
-    if (error.code === "ENOENT") {
-      console.warn("El archivo no existe.");
-    } else {
-      // Manejo de otros errores
-      console.error("Error, algo salió mal:", error);
-    }
-  }
-}
-
-async function saveList(newList) {
-    //Declaro la ruta absoluta del archivo,
-    const filePath = path.resolve(__dirname, "../data/charts.json");
-  
-    try {
-      // Intentar leer el archivo
-      const data = await fs.readFile(filePath, "utf-8");
-  
-      // Guardar el archivo actualizado
-      await fs.writeFile(filePath, JSON.stringify(newList, null, 2), "utf-8");
-      return "Lista guardada con éxito:", newList;
-    } catch (error) {
-      // Si el archivo no existe, crearlo
-      if (error.code === "ENOENT") {
-        console.warn("El archivo no existe. Creando uno nuevo...");
-  
-        // Guardar el archivo
-        await fs.writeFile(filePath, JSON.stringify(newList, null, 2), "utf-8");
-        console.log("Archivo creado y la Lista se a añadido con éxito:", newList);
-      } else {
-        // Manejo de otros errores
-        console.error("Error, algo salió mal:", error);
-      }
-    }
-  }
 
 export default router;

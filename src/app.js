@@ -6,7 +6,8 @@ import { getDirname } from "./utils/dirname.js";
 import { Server } from "socket.io";
 import handlebars from 'express-handlebars';
 import realtimeRoutes from './routes/realtime.routes.js'
-import { loadProducts } from "./routes/products.routes.js";
+import { connectDB } from './db/connection.js';
+import {insertTestProducts} from './data/dataLoader.js';
 
 
 
@@ -46,10 +47,12 @@ app.use("/api/charts", chartsRouter);
 app.use("/",express.static(__dirname + "/public"));//direccion a la carpeta static
 app.use("/products/realtimeProducts", realtimeRoutes); //linkeo ROUTES
 
+//Conecto con la Base de datos
+connectDB();
 
 //listener del puerto
 const httpServer = app.listen(PORT, () => {
-    console.log(`${colores.info}Servidor escuchando en el puerto: ${PORT}`);
+    console.log(`${colores.info}✅ Servidor escuchando en el puerto: ${PORT}`);
 });
 
 //wraper de websocket
@@ -84,3 +87,7 @@ app.use((req, res, next) => {
     });
     next();
 });
+
+
+// Funcion para insertar productos harcodeados
+// insertTestProducts();
