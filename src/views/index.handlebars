@@ -1,21 +1,32 @@
 <div class="container my-4">
-    <h1 class="text-center text-primary">Productos en Tiempo Real</h1>
-      <li class="btn btn-primary"><a class="text-white" href="/products/realtimeProducts/menu">Volver al Menu</a></li>
+    <h1 class="text-center text-primary">SHOP - Real time Products</h1>
+    <li class="btn btn-primary">
+        <!-- Aquí va el enlace que será actualizado por JS -->
+        <a class="text-white" id="goToCartLink" href="#">Go to cart</a>
+    </li>
 </div>
 
-
-
-  
 <div class="container my-4">
     <div class="row row-cols-1 row-cols-md-3 g-4" id="productsTable">
         {{!-- Aquí se renderizarán las cartas de productos --}}
     </div>
 </div>
 
-
-
-
-
+<script>
+    // Recuperar el cart.id del localStorage
+    const id_carrito = localStorage.getItem('cid');
+    
+    // Si hay un cartId, actualizar la URL del enlace
+    const goToCartLink = document.getElementById("goToCartLink");
+    
+    if (id_carrito) {
+        // Actualizamos la URL del enlace con el cart.id
+        goToCartLink.href = `http://localhost:8080/products/realtimeProducts/cart/${id_carrito}`;
+        console.log('Cart ID desde localStorage:', id_carrito);
+    } else {
+        console.log('No se encontró un cart ID en localStorage');
+    }
+</script>
 
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="/socket.io/socket.io.js"></script>

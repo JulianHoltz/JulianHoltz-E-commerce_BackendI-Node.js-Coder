@@ -1,0 +1,39 @@
+<div class="container my-4">
+  <h1 class="text-center text-primary">Cart</h1>
+  <li class="btn btn-primary"><a class="text-white" href="/products/realtimeProducts">back to shop</a></li>
+</div>
+
+<table id="productsTable" class="table table-bordered">
+  <thead>
+    <tr>
+      <th>Producto</th>
+      <th>Imagen</th>
+      <th>Cantidad</th>
+      <th>Acción</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each cart.products}}
+      <tr data-product-id="{{this.product._id}}">
+        <td>{{this.product.title}}</td>
+        <td><img src="{{this.product.img.thumbnails}}" alt="{{this.product.img.alt}}" width="50" height="50"></td>
+        <td>{{this.quantity}}</td>
+        <td>
+          <button class="btn btn-danger btn-sm remove-btn" data-cid="{{../cart._id}}" data-pid="{{this.product._id}}">Eliminar</button>
+        </td>
+      </tr>
+    {{/each}}
+  </tbody>
+</table>
+
+<div class="container my-4">
+  <h1 class="text-center text-primary">Its Time!</h1>
+  <li class="btn btn-primary"><a class="text-white" href="/products/realtimeProducts">buy now</a></li>
+</div>
+
+<div class="container text-center my-4">
+  <button id="emptyCartBtn" class="btn btn-danger btn-lg" data-cid="{{cart._id}}">Vaciar Carrito</button>
+</div>
+
+<script src="/js/cart.js"></script>
+
