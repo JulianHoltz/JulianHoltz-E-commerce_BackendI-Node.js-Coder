@@ -1,79 +1,63 @@
 const socket = io();
 const productsTable = document.getElementById("productsTable");
+const prevPageBtn = document.getElementById("prevPage");
+const nextPageBtn = document.getElementById("nextPage");
+const pageInfo = document.getElementById("pageInfo");
+const categoryFilter = document.getElementById("categoryFilter");
 
-// Verificar si el usuario ya está registrado en el localStorage
-const user = localStorage.getItem("user");
-const cartId = localStorage.getItem("cid");
+let currentPage = 1;
+let totalPages = 1;
+let currentCategory = "";
 
-if (!user) {
-    // Si no hay usuario guardado, mostrar SweetAlert para registrar el nombre
-    Swal.fire({
-        title: '¡Bienvenido!',
-        text: 'Aún no estás registrado. Por favor, ingresa tu nombre.',
-        input: 'text',
-        inputPlaceholder: 'Nombre de usuario',
-        confirmButtonText: 'Registrar',
-        showCancelButton: false,
-        preConfirm: (inputValue) => {
-            if (inputValue) {
-                // Si se ingresa un nombre, guardarlo en localStorage y crear el carrito
-                localStorage.setItem("user", inputValue);
-                createCart(inputValue);
-            } else {
-                // Si no se ingresa nombre, prevenir el cierre del modal
-                Swal.showValidationMessage('El nombre es obligatorio');
-            }
-        }
-    });
-} else if (!cartId) {
-    // Si el usuario está registrado pero no tiene carrito, creamos el carrito
-    createCart(user);
-}
-
-// Crear un carrito en la base de datos y guardar el id en el localStorage
-const createCart = async (userName) => {
+// Cargar productos
+const loadProducts = async (page = 1, category = "") => {
     try {
-        const response = await fetch(`http://localhost:8080/api/carts/${userName}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' }
-        });
-        const data = await response.json();
-        if (data.status === 'success') {
-            // Guardar el cartId en el localStorage
-            localStorage.setItem("cid", data.payload._id);
-            Swal.fire('¡Carrito creado!', 'Tu carrito ha sido creado correctamente.', 'success').then(() => {
-                // Después de mostrar el éxito, recargar la página para mostrar los productos
-                location.reload(); // Recarga la página para mostrar los productos
-            });
-        } else {
-            Swal.fire('Error', 'No se pudo crear el carrito. Intenta nuevamente.', 'error');
+        const res = await fetch(`/api/products?page=${page}&limit=9${category ? `&query=${category}` : ""}`);
+        const data = await res.json();
+
+        if (data.status === "success") {
+            totalPages = data.payload.totalPages;
+            currentPage = data.payload.page;
+            renderTable(data.payload.docs);
+            updatePagination();
         }
     } catch (error) {
-        console.error("Error al crear el carrito:", error);
-        Swal.fire('Error', 'Hubo un problema al crear tu carrito. Intenta nuevamente más tarde.', 'error');
+        console.error("Error al obtener productos:", error);
     }
 };
 
-// Escuchar la lista de productos y renderizarla
-socket.on("productList", (products) => renderTable(products));
-
-// Renderizar las cartas de productos
+// Mostrar productos
 const renderTable = (products) => {
-    productsTable.innerHTML = products.map(product => `
+    productsTable.innerHTML = products.map(p => `
         <div class="col">
-            <div class="card shadow-sm" style="max-width: 250px;">
-                <img src="${product.img.thumbnails}" class="card-img-top" alt="${product.img.alt}">
-                <div class="card-body p-2">
-                    <h6 class="card-title text-truncate">${product.title}</h6>
-                    <p class="card-text text-muted small">${product.description}</p>
-                    <h6 class="fw-bold">$${product.price}</h6>
-                    <a href="/products/realtimeProducts/productDetail/${product._id}" class="btn btn-primary btn-sm w-100">Product Detail</a>
+            <div class="card">
+                <img src="${p.img.thumbnails}" class="card-img-top">
+                <div class="card-body">
+                    <h6>${p.title}</h6>
+                    <p>${p.description}</p>
+                    <h6>$${p.price}</h6>
+                    <a href="/products/realtimeProducts/productDetail/${p._id}" class="btn btn-primary btn-sm">Ver</a>
                 </div>
             </div>
         </div>
     `).join("");
 };
 
+// Actualizar botones de paginación
+const updatePagination = () => {
+    pageInfo.textContent = `Página ${currentPage} de ${totalPages}`;
+    prevPageBtn.disabled = currentPage === 1;
+    nextPageBtn.disabled = currentPage === totalPages;
+};
 
+// Eventos
+prevPageBtn.addEventListener("click", () => loadProducts(currentPage - 1, currentCategory));
+nextPageBtn.addEventListener("click", () => loadProducts(currentPage + 1, currentCategory));
+categoryFilter.addEventListener("change", (e) => loadProducts(1, e.target.value));
 
+// Escuchar cambios en tiempo real
+socket.on("productList", renderTable);
+
+// Cargar al iniciar
+loadProducts();
 
